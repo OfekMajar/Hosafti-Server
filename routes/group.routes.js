@@ -9,7 +9,6 @@ const {
   getAllUserCreatedGroups,
   getUserParticiptedGroups,
   moveListToHistory,
-  getGroupHistoryList,
 } = require("../controllers/group.controllers");
 const { auth, authInviteLink } = require("../middlewares/auth");
 const router = Router();
@@ -24,8 +23,7 @@ router.get("/user/:id", getAllUserCreatedGroups);
 router.get("/myGroups/:id",getUserParticiptedGroups)
 //^ get one group
 router.get("/group/:id", getOneGroup);
-//^ get group history list 
-router.get("/getGroupHistoryList/:id",getGroupHistoryList)
+
 //^ createGroup
 router.post("/createGroup", auth, createGroup);
 

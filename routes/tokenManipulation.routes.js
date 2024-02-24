@@ -20,7 +20,6 @@ router.patch("/tokenDecryptor", async (req, res) => {
 router.post("/createLinkToken/:id", async (req, res) => {
   const { id } = req.params;
     const {body} =req
-    console.log(body);
   try {
   const token=  generateGroupLinkToken({id ,owner:body.owner})    
     res.send(token);

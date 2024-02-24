@@ -24,7 +24,7 @@ const getAllGroceryLists = async (req, res) => {
   }
 };
 
-//^ get group grocecy lists
+//^ get group active grocecy lists
 const getGroupGroceryLists = async (req, res) => {
   const { id } = req.params;
   try {
@@ -32,7 +32,6 @@ const getGroupGroceryLists = async (req, res) => {
       groupId: id,
       isActive: true,
     });
-    console.log(groceryLists);
     if (groceryLists) return res.send(groceryLists);
     return res.status(404).send("couldn't find the groceryLists");
   } catch (error) {
@@ -40,6 +39,26 @@ const getGroupGroceryLists = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
+
+//^ get group grocery lists
+const getGroupHistoryList = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const groceryLists = await GroceryList.find({
+      groupId: id,
+      isActive: false,
+    })
+      .sort({ _id: -1 }) // Sort by descending _id (assuming _id represents the creation timestamp)
+      .limit(20); // Limit to 20 results
+    if (groceryLists) return res.send(groceryLists);
+    return res.status(404).send("Couldn't find the grocery lists");
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Error");
+  }
+};
+
 
 //^ get single groceryList
 const getOneGroceryList = async (req, res) => {
@@ -77,9 +96,7 @@ const getOneGroceryList = async (req, res) => {
 const createGroceryList = async (req, res) => {
   const { body } = req;
   try {
-    console.log(body);
     const group = await Group.findById(body.groupId);
-    console.log(group);
     // body.owner = group.owner;
   } catch (error) {
     console.log(error);
@@ -158,7 +175,6 @@ const deleteGroceryList = async (req, res) => {
   const { id } = req.params;
   try {
     const delgroceryList = await GroceryList.findByIdAndDelete(id);
-    console.log(delgroceryList);
     res.send("deleted successfully");
   } catch (error) {
     res.status(400).send("Error");
@@ -172,4 +188,5 @@ module.exports = {
   deleteGroceryList,
   getGroupGroceryLists,
   updateMainList,
+  getGroupHistoryList,
 };

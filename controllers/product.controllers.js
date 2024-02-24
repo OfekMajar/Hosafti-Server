@@ -112,7 +112,6 @@ const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
     const delproduct = await Product.findByIdAndDelete(id);
-    console.log(delproduct);
     res.send("deleted successfully");
   } catch (error) {
     res.status(400).send("Error");

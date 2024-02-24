@@ -7,6 +7,7 @@ const {
   deleteGroceryList,
   getGroupGroceryLists,
   updateMainList,
+  getGroupHistoryList,
 } = require("../controllers/groceryList.controllers");
 const { auth } = require("../middlewares/auth");
 const router = Router();
@@ -21,7 +22,8 @@ router.get("/groceryList/:id", getOneGroceryList);
 router.get("/group/:id", getGroupGroceryLists);
 //^ create list
 router.post("/createGroceryList", createGroceryList);
-
+//^ get group 20 history lists
+router.get("/getGroupHistoryList/:id",getGroupHistoryList)
 //^ add /remove product from main list
 router.post("/updateMainList", updateMainList);
 //^ update
