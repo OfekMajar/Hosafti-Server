@@ -8,6 +8,7 @@ const groceryListSchema = new mongoose.Schema({
     {
       productId: { type: mongoose.Types.ObjectId, ref: "Product" },
       amount: { type: Number, default: 1 },
+      checked: { type: Boolean, default: false },
     },
   ],
   eachParticipantList: { type: Array },

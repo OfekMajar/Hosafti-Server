@@ -13,7 +13,12 @@ const getAllProducts = async (req, res) => {
 
 //^ get by auto comp
 const getWithAutoComp = async (req, res) => {
+  if (req.query.title === "") {
+   return res.send([]);
+  }
+  
   try {
+   
     let results;
     if (req.query.title) {
       const searchTerm = req.query.title.replace(

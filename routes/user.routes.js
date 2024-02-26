@@ -5,9 +5,9 @@ const {
   login,
   userForgotPassword,
   deleteUser,
-  updateUserDetails,
+  userResetPassword,
 } = require("../controllers/user.controllers");
-const { auth } = require("../middlewares/auth");
+const { auth, authorize } = require("../middlewares/auth");
 const router = Router();
 
 //^ get all
@@ -19,11 +19,15 @@ router.post("/register", register);
 //^ login
 router.post("/login", login);
 
+//^ forgot password
+router.post("/forgotPassword", userForgotPassword);
+//^ reset password
+router.post("/resetPassword", auth, userResetPassword);
+
 //^ update
-router.patch("/updateUserDetails/:id", updateUserDetails);
+// router.patch("/updateUserDetails/:id", updateUserDetails);
 
 //^delete user
-router.delete("/:id", deleteUser);
-
+router.delete("/:id", auth, authorize(["admin"]), deleteUser);
 
 module.exports = router;

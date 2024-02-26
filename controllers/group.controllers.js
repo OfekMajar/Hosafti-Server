@@ -66,6 +66,23 @@ const getOneGroup = async (req, res) => {
  * @param {historyGroceryLists: [{ type: mongoose.Types.ObjectId, ref: "GroceryList" }]}
  */
 
+//^ check if user is in group
+const isUserInGroup = async (req, res) => {
+  const { body, params } = req;
+  const {groupId} = params;
+  try {
+    const group = await Group.findById(groupId);
+    if(!group) return res.status(404).send("Group not found")
+    const index = group.participants.indexOf(body.userId);
+
+    if (index === -1) return res.status(401).send("Unauthorized");
+
+    return res.status(200).send("authorized");
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Error");
+  }
+};
 //^ create
 const createGroup = async (req, res) => {
   const { body } = req;
@@ -180,5 +197,5 @@ module.exports = {
   getUserParticiptedGroups,
   joinGroup,
   moveListToHistory,
-
+  isUserInGroup
 };

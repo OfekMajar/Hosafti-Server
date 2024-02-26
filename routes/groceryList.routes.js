@@ -8,8 +8,9 @@ const {
   getGroupGroceryLists,
   updateMainList,
   getGroupHistoryList,
+  checkOffListItem,
 } = require("../controllers/groceryList.controllers");
-const { auth } = require("../middlewares/auth");
+const { auth, authorize, checkIfUserInGroup } = require("../middlewares/auth");
 const router = Router();
 
 //^ get all
@@ -25,10 +26,12 @@ router.post("/createGroceryList", createGroceryList);
 //^ get group 20 history lists
 router.get("/getGroupHistoryList/:id",getGroupHistoryList)
 //^ add /remove product from main list
-router.post("/updateMainList", updateMainList);
+router.post("/updateMainList", auth, updateMainList);
+//^ check Off List Item
+router.patch("/checkOffListItem",checkOffListItem)
 //^ update
 router.patch("/updateGroceryList/:id", updateGroceryList);
 
 //^delete user
-router.delete("/:id", deleteGroceryList);
+router.delete("/:id",auth,authorize(["admin"]), deleteGroceryList);
 module.exports = router;

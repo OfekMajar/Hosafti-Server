@@ -1,7 +1,11 @@
 const { User } = require("../models/user.model");
 const bcrypt = require("bcryptjs");
-const { generateToken } = require("../utils/jwt");
-
+const { generateToken, generateResetPasswordToken } = require("../utils/jwt");
+const {
+  sendWelcomeEmail,
+  sendResetPasswordEmail,
+} = require("../services/email/sendEmail");
+const clientURL = "http://localhost:5173";
 //^ getAllUsers
 const getAllUsers = async (req, res) => {
   try {
@@ -31,6 +35,9 @@ const register = async (req, res) => {
       id: user._id,
       role: "free",
     });
+
+    await sendWelcomeEmail(user.email, "welcome", { name: user.fullName });
+
     return res.send({
       user: { email, id: user._id, role: "free", fullName },
       token,
@@ -53,7 +60,7 @@ const login = async (req, res) => {
           email: user.email,
           id: user._id,
           role: "free",
-          fullName:user.fullName
+          fullName: user.fullName,
         });
         return res.send(token);
       }
@@ -68,41 +75,53 @@ const login = async (req, res) => {
 };
 
 //^ user Forgot Password
-// const userForgotPassword = async (req, res) => {
-//   const { body, params } = req;
-//   const {oldPassword,newPassword,email}=body
-//   try {
-//     const user = await User.findOne({ email });
-//     if (user) {
-//       const isMatch = await bcrypt.compare(oldPassword, user.password);
-//     }
-//   } catch (error) {
-
-//   }
-//   const { id } = params;
-//   try {
-//     const user = await User.findByIdAndUpdate(id, body, { new: true });
-//     console.log(user);
-//     if (user) return res.send(user);
-//     return res.send("user wasn't found");
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).send("Error");
-//   }
-// };
-
-const updateUserDetails = async (req, res) => {
-  const { body, params } = req;
-  const { id } = params;
+const userForgotPassword = async (req, res) => {
+  const { email } = req.body;
   try {
-    const product = Product.findByIdAndUpdate(id, body, { new: true });
-    if (product) return res.send(product);
-    return res.send("product wasn't found");
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) return res.status(400).send("user not found");
+    const resetToken = generateResetPasswordToken({ user });
+    const link = `${clientURL}/passwordReset/token/${resetToken}/id/${user._id}`;
+    await sendResetPasswordEmail(user.email, "Password Reset Request", {
+      name: user.fullName,
+      link: link,
+    });
+    res.send("email sent");
   } catch (error) {
     console.log(error);
-    res.status(400).send("Error");
+    res.status(400).send("ERROR");
   }
 };
+//^ user reset password
+const userResetPassword = async (req, res) => {
+  const { body } = req;
+  const reqUser = req.user;
+  try {
+    console.log(reqUser.user._id);
+    console.log("tt");
+    const user = await User.findById(reqUser.user._id);
+    const hash = await bcrypt.hash(body.newPassword, 10);
+    user.password = hash;
+    await user.save();
+    res.send("Password reset successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error resetting password");
+  }
+};
+// const updateUserDetails = async (req, res) => {
+//   const { body, params } = req;
+//   const { id } = params;
+//   try {
+//     const product = Product.findByIdAndUpdate(id, body, { new: true });
+//     if (product) return res.send(product);
+//     return res.send("product wasn't found");
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send("Error");
+//   }
+// };
 //^delete
 const deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -118,6 +137,7 @@ module.exports = {
   getAllUsers,
   register,
   login,
-  updateUserDetails,
   deleteUser,
+  userForgotPassword,
+  userResetPassword,
 };

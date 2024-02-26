@@ -40,7 +40,6 @@ const getGroupGroceryLists = async (req, res) => {
   }
 };
 
-
 //^ get group grocery lists
 const getGroupHistoryList = async (req, res) => {
   const { id } = req.params;
@@ -59,18 +58,14 @@ const getGroupHistoryList = async (req, res) => {
   }
 };
 
-
 //^ get single groceryList
 const getOneGroceryList = async (req, res) => {
   const { id } = req.params;
   try {
     const groceryList = await GroceryList.findById(id)
       .populate({
-        path: "mainList",
-        populate: {
-          path: "productId",
-          select: "title img category",
-        },
+        path: "mainList.productId",
+        select: "title img category",
       })
       .populate("groupId")
       .populate("owner");
@@ -118,6 +113,7 @@ const updateGroceryList = (req, res) => {
   try {
     const groceryList = GroceryList.findByIdAndUpdate(id, body, { new: true });
     if (groceryList) return res.send(groceryList);
+
     return res.send("groceryList wasn't found");
   } catch (error) {
     console.log(error);
@@ -128,17 +124,19 @@ const updateGroceryList = (req, res) => {
 const updateMainList = async (req, res) => {
   try {
     const { groceryListId, productId, action } = req.body;
-
+    const user =req.user
     // Find the grocery list by ID
     const groceryList = await GroceryList.findById(groceryListId);
-
+  
     if (!groceryList) {
       return res.status(404).send("Grocery list not found");
-    }
+    } 
+     const group = await Group.findById(groceryList.groupId)
+    if(!group.participants.includes(user.id)) return res.status(401).send("not in group")
 
     // Find the index of the product in the mainList array
     const index = groceryList.mainList.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId == productId
     );
 
     // If the product is not found in the list, add it with amount 1
@@ -170,6 +168,28 @@ const updateMainList = async (req, res) => {
   }
 };
 
+//^ checkOff list items
+const checkOffListItem = async (req, res) => {
+  try {
+    const { groceryListId, productId } = req.body;
+    const groceryList = await GroceryList.findById(groceryListId);
+    if (!groceryList) {
+      return res.status(404).send("Grocery list not found");
+    }
+    const index = groceryList.mainList.findIndex(
+      (item) => item.productId == productId
+    );
+    if (index === -1) {
+      return res.status(404).send("product not found");
+    }
+    groceryList.mainList[index].checked = !groceryList.mainList[index].checked;
+    await groceryList.save();
+    return res.status(200).send("checkd the product");
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Error");
+  }
+};
 //^delete
 const deleteGroceryList = async (req, res) => {
   const { id } = req.params;
@@ -189,4 +209,5 @@ module.exports = {
   getGroupGroceryLists,
   updateMainList,
   getGroupHistoryList,
+  checkOffListItem,
 };

@@ -1,10 +1,10 @@
 const {app} = require("./app")
 const mongoose=require("mongoose")
-const url= "mongodb://localhost:27017/Hosafti"
-
+const {config}=require("./config")
+const {MONGO_URL}=config
 
 mongoose
-  .connect(url,{socketTimeoutMS: 45000})
+  .connect(MONGO_URL,{socketTimeoutMS: 45000})
   .then(() => {
     console.log("connected to db");
   })
@@ -12,16 +12,8 @@ mongoose
     console.log(err);
   });
 
-  const connection=async()=>{
-    try {
-      const connectionParams={
-        useNewUrl
-      }
-    } catch (error) {
-      
-    }
-  }
+ 
 const PORT = process.env.PORT || 1010;
 app.listen(PORT, () => {
-  console.log("the server is running");
+  console.log(`the server is running on port ${PORT}`);
 });
