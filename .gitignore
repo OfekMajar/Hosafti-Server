@@ -15,6 +15,7 @@ dist-ssr
 auth.js
 jwt.js
 .gitignore
+*env
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
