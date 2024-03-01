@@ -5,7 +5,8 @@ const {
   sendWelcomeEmail,
   sendResetPasswordEmail,
 } = require("../services/email/sendEmail");
-const clientURL = "http://localhost:5173";
+// const clientURL = "http://localhost:5173";
+const clientURL = "https://hosafti-77d46.web.app";
 //^ getAllUsers
 const getAllUsers = async (req, res) => {
   try {

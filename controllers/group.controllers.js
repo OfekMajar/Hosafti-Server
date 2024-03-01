@@ -72,6 +72,7 @@ const isUserInGroup = async (req, res) => {
   const {groupId} = params;
   try {
     const group = await Group.findById(groupId);
+
     if(!group) return res.status(404).send("Group not found")
     const index = group.participants.indexOf(body.userId);
 
