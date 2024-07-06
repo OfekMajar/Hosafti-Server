@@ -9,7 +9,6 @@ const {
   deleteCategory,
   getWithAutoComp,
 } = require("../controllers/product.controllers");
-const { Product } = require("../models/product.model");
 const { auth, authorize } = require("../middlewares/auth");
 const router = Router();
 // const { auth } = require("../middlewares/auth");
@@ -30,11 +29,16 @@ router.post("/", createProduct);
 router.patch("/:id", updateProduct);
 
 //^ delete category
-router.delete("/category/:category",auth,authorize(["admin"]), deleteCategory);
+router.delete(
+  "/category/:category",
+  auth,
+  authorize(["admin"]),
+  deleteCategory
+);
 
 //^ delete product
-router.delete("/:id",auth,authorize(["admin"]), deleteProduct);
+router.delete("/:id", auth, authorize(["admin"]), deleteProduct);
 
-router.get("/autoCompSearch",getWithAutoComp);
+router.get("/autoCompSearch", getWithAutoComp);
 
 module.exports = router;
