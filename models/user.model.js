@@ -1,19 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  fullName: { type: String, require: true },
-  password: { type: String, require: true },
-  email: { type: String, require: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String },
+  email: { type: String, required: true },
+  profilePicture: { type: String }, // Add this field for profile picture URL
 });
 
 const User = mongoose.model("User", userSchema);
-
-const validate = (user) => {
-  const schema = Joi.object({
-    fullName: Joi.string().required(),
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-  });
-  return schema.validate(user);
-};
-module.exports = { User, validate };
+module.exports = { User };

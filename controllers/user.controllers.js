@@ -5,8 +5,10 @@ const {
   sendWelcomeEmail,
   sendResetPasswordEmail,
 } = require("../services/email/sendEmail");
+
 // const clientURL = "http://localhost:5173";
 const clientURL = "https://hosafti-77d46.web.app";
+
 //^ getAllUsers
 const getAllUsers = async (req, res) => {
   try {
@@ -18,59 +20,34 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const createNewUser = async () => {};
+
 //^ register
 const register = async (req, res) => {
-  const { email, password, fullName } = req.body;
-
-  const isEmailUsed = await User.findOne({ email });
-  if (isEmailUsed) {
-    return res.status(400).send("email already in use");
-  }
   try {
-    const hash = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hash, fullName, role: "free" });
+    console.log("Received registration request:", req.body); // Log incoming request data
+    console.log("Received token:", req.headers.authorization); // Log incoming token
 
-    await user.save();
-    const token = generateToken({
-      email: user.email,
-      id: user._id,
-      role: "free",
-    });
-
-    await sendWelcomeEmail(user.email, "welcome", { name: user.fullName });
-
-    return res.send({
-      user: { email, id: user._id, role: "free", fullName },
-      token,
-    });
+    // Your registration logic here
+    res.status(200).send("User registered successfully");
   } catch (error) {
-    console.log(error);
-    res.status(400).send("Error");
+    console.error("Error registering user:", error);
+    res.status(500).send("Error registering user");
   }
 };
 
+module.exports = { register };
+
 //^ login
 const login = async (req, res) => {
-  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        const token = generateToken({
-          email: user.email,
-          id: user._id,
-          role: "free",
-          fullName: user.fullName,
-        });
-        return res.send(token);
-      }
-      return res.status(401).send("Email or password are incorrect");
+    const isEmailUsed = await User.findOne({ email });
+    if (isEmailUsed) {
+      return res.status(400).send("email already in use");
     }
-
     return res.status(401).send("Email or password are incorrect");
   } catch (error) {
-    console.log(error);
+    console.error(error.stack);
     res.status(400).send(error);
   }
 };

@@ -8,13 +8,14 @@ const {
   userResetPassword,
 } = require("../controllers/user.controllers");
 const { auth, authorize } = require("../middlewares/auth");
+const { jwtCheck ,authentic} = require("../middlewares/tokenValidationMiddleware");
 const router = Router();
 
 //^ get all
 router.get("/", getAllUsers);
 
 //^ register
-router.post("/register", register);
+router.post("/register", authentic, register);
 
 //^ login
 router.post("/login", login);

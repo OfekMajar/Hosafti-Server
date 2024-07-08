@@ -46,4 +46,5 @@ const checkIfUserInGroup = () => {
     next();
   };
 };
+
 module.exports = { auth, authInviteLink, authorize, checkIfUserInGroup };
