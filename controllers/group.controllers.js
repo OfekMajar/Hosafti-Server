@@ -4,6 +4,7 @@ const {
 const { GroceryList } = require("../models/groceryList.model");
 const { Group } = require("../models/group.model");
 const { User } = require("../models/user.model");
+const findUser = require("../utils/findUser");
 
 /**
  * @param {title: { type: String }}
@@ -39,8 +40,7 @@ const getAllUserCreatedGroups = async (req, res) => {
 
 const getUserParticipatedGroups = async (req, res) => {
   try {
-    const userInfo = await getAuth0UserInfo(req);
-    const user = await User.findOne({ email: userInfo.email });
+    const user = await findUser(req);
     const group = await Group.find({ participants: user._id })
       .populate("owner", "email fullName")
       .populate("participants", "fullName");
@@ -200,7 +200,7 @@ module.exports = {
   updateGroup,
   deleteGroup,
   getAllUserCreatedGroups,
-  getUserParticipatedGroups: getUserParticipatedGroups,
+  getUserParticipatedGroups,
   joinGroup,
   moveListToHistory,
   isUserInGroup,
