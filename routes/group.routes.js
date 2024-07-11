@@ -30,7 +30,7 @@ router.get("/group/:id", getOneGroup);
 //^ check if user in group
 router.patch("/checkIfUserInGroup/:groupId", isUserInGroup);
 //^ createGroup
-router.post("/createGroup", auth, createGroup);
+router.post("/createGroup", createGroup);
 
 //^ move list to history
 router.patch("/moveListToHistory/:id", moveListToHistory);

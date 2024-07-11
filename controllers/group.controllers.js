@@ -89,11 +89,13 @@ const isUserInGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ create
 const createGroup = async (req, res) => {
-  const { body } = req;
   try {
-    body.owner = req.user.id;
+    const { body } = req;
+    const user = await findUser(req);
+    body.owner = user.id;
     body.participants = [body.owner];
     const newGroup = new Group(body);
     await newGroup.save();
@@ -103,6 +105,7 @@ const createGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 // ////^ moveListToHistory
 // const moveListToHistory = async (req, res) => {
 //   const { body, params } = req;
@@ -155,6 +158,7 @@ const moveListToHistory = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ update
 const updateGroup = async (req, res) => {
   const { body, params } = req;
@@ -169,6 +173,7 @@ const updateGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ join group
 const joinGroup = async (req, res) => {
   const { body } = req;

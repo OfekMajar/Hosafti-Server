@@ -17,10 +17,9 @@ const auth = (req, res, next) => {
 
 const authInviteLink = (req, res, next) => {
   try {
-    const inviteLinkToken = req.headers["authorization"];
+    const { inviteLinkToken } = req.body;
     if (!inviteLinkToken) return res.status(401).send("unAuthorized");
-    const token = inviteLinkToken.split(" ")[1];
-    const payload = verifyToken(token);
+    const payload = verifyToken(inviteLinkToken);
     if (!payload) return res.status(401).send("unAuthorized");
     req.group = payload;
     next();
