@@ -22,7 +22,7 @@ router.get("/", getAllGroups);
 router.get("/user/:id", getAllUserCreatedGroups);
 
 //^get user Participated groups
-router.get("/myGroups/:id", getUserParticipatedGroups);
+router.get("/myGroups", getUserParticipatedGroups);
 
 //^ get one group
 router.get("/group/:id", getOneGroup);
