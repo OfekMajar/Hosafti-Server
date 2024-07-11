@@ -7,11 +7,12 @@ const {
   deleteGroup,
   joinGroup,
   getAllUserCreatedGroups,
-  getUserParticiptedGroups,
+  getUserParticipatedGroups,
   moveListToHistory,
   isUserInGroup,
 } = require("../controllers/group.controllers");
 const { auth, authInviteLink, authorize } = require("../middlewares/auth");
+const { jwtCheck } = require("../middlewares/tokenValidationMiddleware");
 const router = Router();
 
 //^ get all
@@ -20,8 +21,8 @@ router.get("/", getAllGroups);
 //^ get all users created groups
 router.get("/user/:id", getAllUserCreatedGroups);
 
-//^get user participed groups
-router.get("/myGroups/:id", getUserParticiptedGroups);
+//^get user Participated groups
+router.get("/myGroups/:id", getUserParticipatedGroups);
 
 //^ get one group
 router.get("/group/:id", getOneGroup);
@@ -38,5 +39,5 @@ router.patch("/moveListToHistory/:id", moveListToHistory);
 //^ join group
 router.patch("/joinGroup", authInviteLink, joinGroup);
 //^delete group
-router.delete("/:id",auth,authorize(["admin"]), deleteGroup);
+router.delete("/:id", auth, authorize(["admin"]), deleteGroup);
 module.exports = router;
