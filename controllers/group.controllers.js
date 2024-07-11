@@ -75,13 +75,13 @@ const getOneGroup = async (req, res) => {
 
 //^ check if user is in group
 const isUserInGroup = async (req, res) => {
-  const { body, params } = req;
-  const { groupId } = params;
   try {
+    const { params } = req;
+    const { groupId } = params;
+    const user = await findUser(req);
     const group = await Group.findById(groupId);
-
     if (!group) return res.status(404).send("Group not found");
-    const index = group.participants.indexOf(body.userId);
+    const index = group.participants.indexOf(user.id);
 
     if (index === -1) return res.status(401).send("Unauthorized");
 

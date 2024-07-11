@@ -28,7 +28,7 @@ router.get("/myGroups", getUserParticipatedGroups);
 router.get("/group/:id", getOneGroup);
 
 //^ check if user in group
-router.patch("/checkIfUserInGroup/:groupId", isUserInGroup);
+router.get("/checkIfUserInGroup/:groupId", isUserInGroup);
 //^ createGroup
 router.post("/createGroup", createGroup);
 
