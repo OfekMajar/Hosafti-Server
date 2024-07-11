@@ -9,10 +9,7 @@ const jwtCheck = auth({
   issuerBaseURL: AUTH0_DOMAIN,
   tokenSigningAlg: "RS256",
 });
-const authentic = async () => {
-  console.log("1");
-  jwtCheck();
-};
+
 const getAuth0UserInfo = async (req) => {
   const accessToken = req.headers.authorization.split(" ")[1];
   const response = await axios.get(`${AUTH0_DOMAIN}/userinfo`, {
@@ -22,4 +19,4 @@ const getAuth0UserInfo = async (req) => {
   const userInformation = response.data;
   return userInformation;
 };
-module.exports = { jwtCheck, authentic, getAuth0UserInfo };
+module.exports = { jwtCheck, getAuth0UserInfo };

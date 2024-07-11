@@ -1,11 +1,8 @@
 const { User } = require("../models/user.model");
-const bcrypt = require("bcryptjs");
-const { generateToken, generateResetPasswordToken } = require("../utils/jwt");
 const {
-  sendWelcomeEmail,
-  sendResetPasswordEmail,
-} = require("../services/email/sendEmail");
-
+  getAuth0UserInfo,
+} = require("../middlewares/tokenValidationMiddleware");
+const findUser = require("../utils/findUser");
 // const clientURL = "http://localhost:5173";
 const clientURL = "https://hosafti-77d46.web.app";
 
@@ -20,74 +17,57 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const createNewUser = async () => {};
-
-//^ register
-const register = async (req, res) => {
+const getPersonalUser = async (req, res) => {
   try {
-    console.log("Received registration request:", req.body); // Log incoming request data
-    console.log("Received token:", req.headers.authorization); // Log incoming token
+    const user = await findUser(req);
+    console.log(user);
+    res.send(user);
+  } catch (error) {
+    console.error(error.stack);
+  }
+};
 
-    // Your registration logic here
+const signupNewUser = async (userInfo, res) => {
+  const { email, given_name, family_name, picture } = userInfo;
+
+  try {
+    const newUser = new User({
+      email: email,
+      firstName: given_name,
+      lastName: family_name,
+      profilePicture: picture,
+    });
+    await newUser.save();
     res.status(200).send("User registered successfully");
+  } catch (error) {
+    console.error(error.stack);
+    return res.status(500).send("Error");
+  }
+};
+
+//^ login
+const login = async (req, res) => {
+  try {
+    const userInfo = await getAuth0UserInfo(req);
+    const { email, email_verified } = userInfo;
+
+    if (!email_verified || !email) {
+      return res
+        .status(401)
+        .send(`Email not ${!email ? "received" : "verified"}`);
+    }
+    let user = await User.findOne({ email });
+    if (!user) {
+      await signupNewUser(userInfo, res);
+    } else {
+      res.status(200).send("User logged in");
+    }
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("Error registering user");
   }
 };
 
-module.exports = { register };
-
-//^ login
-const login = async (req, res) => {
-  try {
-    const isEmailUsed = await User.findOne({ email });
-    if (isEmailUsed) {
-      return res.status(400).send("email already in use");
-    }
-    return res.status(401).send("Email or password are incorrect");
-  } catch (error) {
-    console.error(error.stack);
-    res.status(400).send(error);
-  }
-};
-
-//^ user Forgot Password
-const userForgotPassword = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    console.log(user);
-    if (!user) return res.status(400).send("user not found");
-    const resetToken = generateResetPasswordToken({ user });
-    const link = `${clientURL}/passwordReset/token/${resetToken}/id/${user._id}`;
-    await sendResetPasswordEmail(user.email, "Password Reset Request", {
-      name: user.fullName,
-      link: link,
-    });
-    res.send("email sent");
-  } catch (error) {
-    console.log(error);
-    res.status(400).send("ERROR");
-  }
-};
-//^ user reset password
-const userResetPassword = async (req, res) => {
-  const { body } = req;
-  const reqUser = req.user;
-  try {
-    console.log(reqUser.user._id);
-    console.log("tt");
-    const user = await User.findById(reqUser.user._id);
-    const hash = await bcrypt.hash(body.newPassword, 10);
-    user.password = hash;
-    await user.save();
-    res.send("Password reset successfully");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Error resetting password");
-  }
-};
 // const updateUserDetails = async (req, res) => {
 //   const { body, params } = req;
 //   const { id } = params;
@@ -100,6 +80,7 @@ const userResetPassword = async (req, res) => {
 //     res.status(400).send("Error");
 //   }
 // };
+
 //^delete
 const deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -111,11 +92,10 @@ const deleteUser = async (req, res) => {
     return res.status(400).send("Error");
   }
 };
+
 module.exports = {
   getAllUsers,
-  register,
   login,
   deleteUser,
-  userForgotPassword,
-  userResetPassword,
+  getPersonalUser,
 };

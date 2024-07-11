@@ -1,5 +1,9 @@
+const {
+  getAuth0UserInfo,
+} = require("../middlewares/tokenValidationMiddleware");
 const { GroceryList } = require("../models/groceryList.model");
 const { Group } = require("../models/group.model");
+const { User } = require("../models/user.model");
 
 /**
  * @param {title: { type: String }}
@@ -33,10 +37,11 @@ const getAllUserCreatedGroups = async (req, res) => {
 };
 //^ get all the groups that the user is apart of
 
-const getUserParticiptedGroups = async (req, res) => {
-  const { id } = req.params;
+const getUserParticipatedGroups = async (req, res) => {
   try {
-    const group = await Group.find({ participants: id })
+    const userInfo = await getAuth0UserInfo(req);
+    const user = await User.findOne({ email: userInfo.email });
+    const group = await Group.find({ participants: user._id })
       .populate("owner", "email fullName")
       .populate("participants", "fullName");
     return res.send(group);
@@ -69,11 +74,11 @@ const getOneGroup = async (req, res) => {
 //^ check if user is in group
 const isUserInGroup = async (req, res) => {
   const { body, params } = req;
-  const {groupId} = params;
+  const { groupId } = params;
   try {
     const group = await Group.findById(groupId);
 
-    if(!group) return res.status(404).send("Group not found")
+    if (!group) return res.status(404).send("Group not found");
     const index = group.participants.indexOf(body.userId);
 
     if (index === -1) return res.status(401).send("Unauthorized");
@@ -195,8 +200,8 @@ module.exports = {
   updateGroup,
   deleteGroup,
   getAllUserCreatedGroups,
-  getUserParticiptedGroups,
+  getUserParticipatedGroups: getUserParticipatedGroups,
   joinGroup,
   moveListToHistory,
-  isUserInGroup
+  isUserInGroup,
 };

@@ -3,27 +3,20 @@ const {
   getAllUsers,
   register,
   login,
-  userForgotPassword,
   deleteUser,
-  userResetPassword,
+  getPersonalUser,
 } = require("../controllers/user.controllers");
 const { auth, authorize } = require("../middlewares/auth");
-const { jwtCheck ,authentic} = require("../middlewares/tokenValidationMiddleware");
+const { jwtCheck } = require("../middlewares/tokenValidationMiddleware");
 const router = Router();
 
 //^ get all
 router.get("/", getAllUsers);
 
-//^ register
-router.post("/register", authentic, register);
+router.get("/personal", getPersonalUser);
 
 //^ login
-router.post("/login", login);
-
-//^ forgot password
-router.post("/forgotPassword", userForgotPassword);
-//^ reset password
-router.post("/resetPassword", auth, userResetPassword);
+router.post("/login", jwtCheck, login);
 
 //^ update
 // router.patch("/updateUserDetails/:id", updateUserDetails);
