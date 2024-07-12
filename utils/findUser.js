@@ -7,7 +7,6 @@ async function findUser(req) {
   try {
     const userInfo = await getAuth0UserInfo(req);
     const user = await User.findOne({ email: userInfo.email });
-    console.log(user);
     return user;
   } catch (error) {
     console.error(error.stack);

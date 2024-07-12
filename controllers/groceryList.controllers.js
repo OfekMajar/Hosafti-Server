@@ -1,5 +1,6 @@
 const { GroceryList } = require("../models/groceryList.model");
 const { Group } = require("../models/group.model");
+const findUser = require("../utils/findUser");
 
 /**
  * @param {title: { type: String }}
@@ -124,15 +125,16 @@ const updateGroceryList = (req, res) => {
 const updateMainList = async (req, res) => {
   try {
     const { groceryListId, productId, action } = req.body;
-    const user =req.user
+    const user = await findUser(req);
     // Find the grocery list by ID
     const groceryList = await GroceryList.findById(groceryListId);
-  
+
     if (!groceryList) {
       return res.status(404).send("Grocery list not found");
-    } 
-     const group = await Group.findById(groceryList.groupId)
-    if(!group.participants.includes(user.id)) return res.status(401).send("not in group")
+    }
+    const group = await Group.findById(groceryList.groupId);
+    if (!group.participants.includes(user.id))
+      return res.status(401).send("not in group");
 
     // Find the index of the product in the mainList array
     const index = groceryList.mainList.findIndex(

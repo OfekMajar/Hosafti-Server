@@ -41,9 +41,11 @@ const getAllUserCreatedGroups = async (req, res) => {
 const getUserParticipatedGroups = async (req, res) => {
   try {
     const user = await findUser(req);
-    const group = await Group.find({ participants: user._id })
-      .populate("owner", "email fullName")
+    console.log(user);
+    const group = await Group.find({ participants: user.id })
+      .populate("owner", "email firstName lastName")
       .populate("participants", "fullName");
+    console.log(group);
     return res.send(group);
   } catch (error) {
     console.log(error);
@@ -73,13 +75,13 @@ const getOneGroup = async (req, res) => {
 
 //^ check if user is in group
 const isUserInGroup = async (req, res) => {
-  const { body, params } = req;
-  const { groupId } = params;
   try {
+    const { params } = req;
+    const { groupId } = params;
+    const user = await findUser(req);
     const group = await Group.findById(groupId);
-
     if (!group) return res.status(404).send("Group not found");
-    const index = group.participants.indexOf(body.userId);
+    const index = group.participants.indexOf(user.id);
 
     if (index === -1) return res.status(401).send("Unauthorized");
 
@@ -89,11 +91,13 @@ const isUserInGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ create
 const createGroup = async (req, res) => {
-  const { body } = req;
   try {
-    body.owner = req.user.id;
+    const { body } = req;
+    const user = await findUser(req);
+    body.owner = user.id;
     body.participants = [body.owner];
     const newGroup = new Group(body);
     await newGroup.save();
@@ -103,6 +107,7 @@ const createGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 // ////^ moveListToHistory
 // const moveListToHistory = async (req, res) => {
 //   const { body, params } = req;
@@ -155,6 +160,7 @@ const moveListToHistory = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ update
 const updateGroup = async (req, res) => {
   const { body, params } = req;
@@ -169,6 +175,7 @@ const updateGroup = async (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ join group
 const joinGroup = async (req, res) => {
   const { body } = req;

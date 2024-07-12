@@ -22,15 +22,15 @@ router.get("/", getAllGroups);
 router.get("/user/:id", getAllUserCreatedGroups);
 
 //^get user Participated groups
-router.get("/myGroups/:id", getUserParticipatedGroups);
+router.get("/myGroups", getUserParticipatedGroups);
 
 //^ get one group
 router.get("/group/:id", getOneGroup);
 
 //^ check if user in group
-router.patch("/checkIfUserInGroup/:groupId", isUserInGroup);
+router.get("/checkIfUserInGroup/:groupId", isUserInGroup);
 //^ createGroup
-router.post("/createGroup", auth, createGroup);
+router.post("/createGroup", createGroup);
 
 //^ move list to history
 router.patch("/moveListToHistory/:id", moveListToHistory);

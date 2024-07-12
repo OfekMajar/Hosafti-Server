@@ -20,7 +20,6 @@ const getAllUsers = async (req, res) => {
 const getPersonalUser = async (req, res) => {
   try {
     const user = await findUser(req);
-    console.log(user);
     res.send(user);
   } catch (error) {
     console.error(error.stack);
@@ -29,7 +28,6 @@ const getPersonalUser = async (req, res) => {
 
 const signupNewUser = async (userInfo, res) => {
   const { email, given_name, family_name, picture } = userInfo;
-
   try {
     const newUser = new User({
       email: email,
@@ -50,7 +48,6 @@ const login = async (req, res) => {
   try {
     const userInfo = await getAuth0UserInfo(req);
     const { email, email_verified } = userInfo;
-
     if (!email_verified || !email) {
       return res
         .status(401)
