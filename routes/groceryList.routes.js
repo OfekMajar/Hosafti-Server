@@ -26,7 +26,7 @@ router.post("/createGroceryList", createGroceryList);
 //^ get group 20 history lists
 router.get("/getGroupHistoryList/:id",getGroupHistoryList)
 //^ add /remove product from main list
-router.post("/updateMainList", auth, updateMainList);
+router.post("/updateMainList", updateMainList);
 //^ check Off List Item
 router.patch("/checkOffListItem",checkOffListItem)
 //^ update
