@@ -13,43 +13,39 @@ const getAllProducts = async (req, res) => {
 
 //^ get by auto comp
 const getWithAutoComp = async (req, res) => {
-  if (req.query.title === "") {
-   return res.send([]);
+  if (!req.query.title) {
+    return res.send([]);
   }
-  
+
   try {
-   
-    let results;
-    if (req.query.title) {
-      const searchTerm = req.query.title.replace(
-        /[-\/\\^$*+?.()|[\]{}]/g,
-        "\\$&"
-      );
-      const regex = new RegExp(searchTerm, "i"); // 'i' for case-insensitive
-      results = await Product.aggregate([
-        {
-          $match: {
-            title: { $regex: regex },
-          },
-        },
-        {
-          $project: {
-            title: 1,
-            img: 1,
-            category: 1,
-            _id: 1,
-          },
-        },
-        {
-          $limit: 20,
-        },
-      ]);
-    } else {
-      results = await Product.find(
-        {},
-        { title: 1, img: 1, category: 1, _id: 0 }
-      ).limit(10);
+    const searchTerm = req.query.title.replace(
+      /[-\/\\^$*+?.()|[\]{}]/g,
+      "\\$&"
+    );
+    const regex = new RegExp(searchTerm, "i"); // 'i' for case-insensitive
+
+    let matchCondition = { title: { $regex: regex } };
+
+    // Check if category is provided and not set to 'all'
+    if (req.query.category && req.query.category.trim() !== "") {
+      matchCondition.category = req.query.category;
     }
+    const results = await Product.aggregate([
+      {
+        $match: matchCondition,
+      },
+      {
+        $project: {
+          title: 1,
+          img: 1,
+          category: 1,
+          _id: 1,
+        },
+      },
+      {
+        $limit: 20,
+      },
+    ]);
 
     return res.send(results);
   } catch (error) {
