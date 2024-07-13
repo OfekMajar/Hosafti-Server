@@ -78,6 +78,19 @@ const login = async (req, res) => {
 //   }
 // };
 
+const updateLastUsedList = async (req, res) => {
+  try {
+    const { lastUsedList } = req.body;
+    const user = await findUser(req);
+    user.lastUsedList = lastUsedList;
+    await user.save();
+    return res.status(200).send("Updated successfully");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
 //^delete
 const deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -95,4 +108,5 @@ module.exports = {
   login,
   deleteUser,
   getPersonalUser,
+  updateLastUsedList,
 };

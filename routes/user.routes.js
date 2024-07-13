@@ -1,10 +1,10 @@
 const { Router } = require("express");
 const {
   getAllUsers,
-  register,
   login,
   deleteUser,
   getPersonalUser,
+  updateLastUsedList,
 } = require("../controllers/user.controllers");
 const { auth, authorize } = require("../middlewares/auth");
 const { jwtCheck } = require("../middlewares/tokenValidationMiddleware");
@@ -17,6 +17,8 @@ router.get("/personal", getPersonalUser);
 
 //^ login
 router.post("/login", jwtCheck, login);
+
+router.put("/last-used-list", updateLastUsedList);
 
 //^ update
 // router.patch("/updateUserDetails/:id", updateUserDetails);
