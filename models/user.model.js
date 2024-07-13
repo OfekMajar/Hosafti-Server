@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String },
   email: { type: String, required: true, unique: true },
   profilePicture: { type: String },
+  lastUsedList: { type: String },
 });
 
 userSchema.virtual("fullName").get(function () {

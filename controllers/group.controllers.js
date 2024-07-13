@@ -41,11 +41,9 @@ const getAllUserCreatedGroups = async (req, res) => {
 const getUserParticipatedGroups = async (req, res) => {
   try {
     const user = await findUser(req);
-    console.log(user);
-    const group = await Group.find({ participants: user.id })
+    const group = await Group.find({ participants: user._id })
       .populate("owner", "email firstName lastName")
       .populate("participants", "fullName");
-    console.log(group);
     return res.send(group);
   } catch (error) {
     console.log(error);
