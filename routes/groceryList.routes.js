@@ -24,14 +24,14 @@ router.get("/group/:id", getGroupGroceryLists);
 //^ create list
 router.post("/createGroceryList", createGroceryList);
 //^ get group 20 history lists
-router.get("/getGroupHistoryList/:id",getGroupHistoryList)
+router.get("/getGroupHistoryList/:id", getGroupHistoryList);
 //^ add /remove product from main list
 router.post("/updateMainList", updateMainList);
 //^ check Off List Item
-router.patch("/checkOffListItem",checkOffListItem)
+router.patch("/checkOffListItem", checkOffListItem);
 //^ update
 router.patch("/updateGroceryList/:id", updateGroceryList);
 
 //^delete user
-router.delete("/:id",auth,authorize(["admin"]), deleteGroceryList);
+router.delete("/:id", auth, authorize(["admin"]), deleteGroceryList);
 module.exports = router;

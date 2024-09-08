@@ -78,16 +78,6 @@ const getOneGroceryList = async (req, res) => {
   }
 };
 
-/**
- * @param {title: { type: String }}
- * @param {owner: { type: mongoose.Types.ObjectId, ref: "User" },}
- * @param { groupId: { type: mongoose.Types.ObjectId, ref: "Group" },}
- * @param {mainList: [{ type: mongoose.Types.ObjectId, ref: "Product" }],}
- * @param { eachParticipantList: { type: Array },}
- * @param {  date: { type: Date, default: Date.now },}
- * @param {  isActive: { type: Boolean },}
- */
-
 //^ create
 const createGroceryList = async (req, res) => {
   const { body } = req;
@@ -107,12 +97,16 @@ const createGroceryList = async (req, res) => {
     return res.status(400).send("Error");
   }
 };
+
 //^ update
-const updateGroceryList = (req, res) => {
+const updateGroceryList = async (req, res) => {
   const { body, params } = req;
   const { id } = params;
+
   try {
-    const groceryList = GroceryList.findByIdAndUpdate(id, body, { new: true });
+    const groceryList = await GroceryList.findByIdAndUpdate(id, body, {
+      new: true,
+    });
     if (groceryList) return res.send(groceryList);
 
     return res.send("groceryList wasn't found");
@@ -121,6 +115,7 @@ const updateGroceryList = (req, res) => {
     res.status(400).send("Error");
   }
 };
+
 //^ editMainList
 const updateMainList = async (req, res) => {
   try {
